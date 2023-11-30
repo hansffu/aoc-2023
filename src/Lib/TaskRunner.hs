@@ -1,17 +1,19 @@
 -- | yo
-module Lib.TaskRunner (solve) where
+module Lib.TaskRunner (run, readInput, InputType (..)) where
 
-getInput :: String -> IO [String]
-getInput filename = lines <$> readFile filename
+readInput :: InputType -> IO [String]
+readInput inputType = lines <$> readFile (getFilename inputType)
 
 data InputType = Input Int | Sample Int
 
-solve :: InputType -> ([String] -> IO String) -> IO String
-solve inputType solver = do
-    input <- getInput $ getFilename inputType
-    result <- solver input
-    return $ "Result: " <> result
+type Task a = [String] -> IO a
+
+run :: Task a -> InputType -> IO a
+run solver inputType = do
+  input <- readInput inputType
+  solver input
+
 
 getFilename :: InputType -> String
-getFilename (Input n) = "input." <> show n <> ".txt"
-getFilename (Sample n) = "sample." <> show n <> ".txt"
+getFilename (Input n) = "input/input." <> show n <> ".txt"
+getFilename (Sample n) = "input/sample." <> show n <> ".txt"
