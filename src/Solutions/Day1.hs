@@ -4,7 +4,7 @@ import Data.Char (intToDigit, isDigit)
 import Data.List (elemIndex, find, isPrefixOf)
 
 import Lib.TaskRunner (InputType (..), run)
-import Lib.Utils (readInt)
+import Lib.Utils (juxt, readInt)
 
 solve1 :: IO Int
 solve1 = run part1 $ Input 1
@@ -19,17 +19,15 @@ part2 :: [String] -> IO Int
 part2 = return . sum . map (parseNumber . cleanNumbers)
 
 parseNumber :: String -> Int
-parseNumber line = readInt [head digits, last digits]
- where
-  digits = filter isDigit line
+parseNumber = readInt . juxt [head, last] . filter isDigit
 
 cleanNumbers :: String -> String
 cleanNumbers [] = []
-cleanNumbers str = case cleaned of
-  Just x -> x : cleanNumbers (tail str)
-  Nothing -> cleanNumbers (tail str)
+cleanNumbers str@(x : xs) = case cleaned of
+  Just d -> d : cleanNumbers xs
+  Nothing -> cleanNumbers xs
  where
   nums = ["one", "two", "three", "four", "five", "six", "seven", "eight", "nine"]
   cleaned
-    | isDigit (head str) = Just (head str)
+    | isDigit x = Just x
     | otherwise = intToDigit . succ <$> (find (`isPrefixOf` str) nums >>= (`elemIndex` nums))
