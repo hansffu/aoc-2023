@@ -13,7 +13,6 @@ run solver inputType = do
   input <- readInput inputType
   solver input
 
-
 getFilename :: InputType -> String
 getFilename (Input n) = "input/input." <> show n <> ".txt"
 getFilename (Sample n) = "input/sample." <> show n <> ".txt"

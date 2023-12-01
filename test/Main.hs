@@ -10,12 +10,11 @@ main = defaultMain day1Tests
 
 day1Tests :: TestTree
 day1Tests =
-    testGroup
-        "Day 1"
-        [ testCase "part 1"
-            $ do
-                result <- testSolution part1 1
-                assertEqual "" result 7
-                -- @?= 7
-        ]
-
+  testGroup
+    "Day 1"
+    [ testCase "part 1" $
+        do
+          result <- testSolution part1 1
+          assertEqual "" result 7
+          -- @?= 7
+    ]
