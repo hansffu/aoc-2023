@@ -17,3 +17,6 @@ fmt:
 # Run ghcid -- auto-recompile and run `main` function
 run:
     ghcid -c "cabal repl exe:advent_of_code" --warnings -T :main
+
+test:
+    ghcid --target=advent-of-code-solutions --run=":! ghcid --target=tests --run"

@@ -6,19 +6,41 @@ build-type:    Simple
 common warnings
   ghc-options: -Wall
 
-executable advent_of_code
-  import:           warnings
-  main-is:          Main.hs
+library advent-of-code-solutions
+  import: warnings
+  hs-source-dirs: src
   build-depends:
     , base
     , mtl
     , split
     , array
     , monad-memo
-
-  hs-source-dirs:   src
+  exposed-modules:
+    Solutions.Day1
   other-modules:
     Lib.TaskRunner
-    Solutions.Day1
+  default-language: Haskell2010
 
+executable advent-of-code
+  import:           warnings
+  main-is:          Main.hs
+  hs-source-dirs: app
+  ghc-options: -threaded -rtsopts -with-rtsopts=-N
+  build-depends:
+    , base
+
+  hs-source-dirs:   src
+  default-language: Haskell2010
+
+test-suite Tests
+  type: exitcode-stdio-1.0
+  main-is: Main.hs
+  hs-source-dirs:
+      test
+  build-depends:
+      advent-of-code-solutions
+    , base
+    , tasty
+    , tasty-hunit
+  other-modules: Utils
   default-language: Haskell2010

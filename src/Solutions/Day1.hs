@@ -1,9 +1,12 @@
 -- | yo
-module Solutions.Day1 (solve1, solve2) where
+module Solutions.Day1 (solve1, solve2, part1) where
 
 import Lib.TaskRunner (InputType (..), run)
 
+solve1 :: IO Int
 solve1 = run part1 $ Input 1
+
+solve2 :: IO Int
 solve2 = run part2 $ Input 1
 
 part1 :: [String] -> IO Int
