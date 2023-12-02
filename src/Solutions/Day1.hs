@@ -1,16 +1,13 @@
-module Solutions.Day1 (solve1, solve2, part1) where
+module Solutions.Day1 (day1) where
 
 import Data.Char (intToDigit, isDigit)
 import Data.List (elemIndex, find, isPrefixOf)
 
-import Lib.TaskRunner (InputType (..), run)
+import Lib.Solution
 import Lib.Utils (juxt, readInt)
 
-solve1 :: IO Int
-solve1 = run part1 $ Input 1
-
-solve2 :: IO Int
-solve2 = run part2 $ Input 1
+day1 :: Solution Int Int
+day1 = Solution 1 part1 part2
 
 part1 :: [String] -> IO Int
 part1 = return . sum . map parseNumber
