@@ -33,9 +33,6 @@
 
           # We use fourmolu
           programs.ormolu.package = pkgs.haskellPackages.fourmolu;
-          settings.formatter.ormolu = {
-            options = [ "--ghc-opt" "-XImportQualifiedPost" ];
-          };
         };
 
         # haskell-flake doesn't set the default package, but you can do it here.

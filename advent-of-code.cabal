@@ -15,6 +15,7 @@ library advent-of-code-solutions
     , MissingH
     , monad-memo
     , mtl
+    , parsec
     , split
     , text
 
@@ -24,6 +25,7 @@ library advent-of-code-solutions
     Solutions.Day2
 
   other-modules:
+    Lib.Parser
     Lib.TaskRunner
     Lib.Utils
 
