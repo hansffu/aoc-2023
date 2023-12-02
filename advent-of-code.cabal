@@ -12,6 +12,7 @@ library advent-of-code-solutions
   build-depends:
     , array
     , base
+    , MissingH
     , monad-memo
     , mtl
     , split
@@ -20,6 +21,7 @@ library advent-of-code-solutions
   exposed-modules:
     Lib.Solution
     Solutions.Day1
+    Solutions.Day2
 
   other-modules:
     Lib.TaskRunner

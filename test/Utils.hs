@@ -1,6 +1,6 @@
 module Utils (testSolution, testSolution') where
 
-testSolution :: ([String] -> IO Int) -> Int -> IO Int
+testSolution :: ([String] -> IO a) -> Int -> IO a
 testSolution solver day = readFile ("input/sample." <> show day <> ".txt") >>= solver . lines
 
 testSolution' :: ([String] -> IO Int) -> String -> IO Int
