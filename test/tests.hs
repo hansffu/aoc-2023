@@ -3,12 +3,13 @@ module Main where
 import Lib.Solution (Solution (part1Solution, part2Solution))
 import Solutions.Day1 (day1)
 import Solutions.Day2 (day2)
+import Solutions.Day3 (day3)
 import Test.Tasty
 import Test.Tasty.HUnit
 import Utils (testSolution, testSolution')
 
 main :: IO ()
-main = defaultMain day2Tests
+main = defaultMain day3Tests
 
 day1Tests :: TestTree
 day1Tests =
@@ -36,4 +37,18 @@ day2Tests =
         do
           result <- testSolution (part2Solution day2) 2
           assertEqual "" 2286 result
+    ]
+
+day3Tests :: TestTree
+day3Tests =
+  testGroup
+    "Day 3"
+    [ testCase "part 1" $
+        do
+          result <- testSolution (part1Solution day3) 3
+          assertEqual "" 4361 result
+    , testCase "part 2" $
+        do
+          result <- testSolution (part2Solution day3) 3
+          assertEqual "" 467835 result
     ]
