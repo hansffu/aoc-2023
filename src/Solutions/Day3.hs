@@ -21,7 +21,23 @@ part1 input = do
   return $ sum $ map (\(NumIndex i _) -> i) validNumbers
 
 part2 :: [String] -> IO Int
-part2 _ = return 0
+part2 input = do
+  let numbers = zip [0 ..] input >>= uncurry parseRow
+  let idxs = numbers >>= adjacentIndexes (length $ head input) (length input)
+  let gearIdxs = filter (\(x, y) -> input !! y !! x == '*') idxs
+  let dups = getDups gearIdxs
+  let withNumbers = map (getAdjacentNumbers numbers) dups
+  return $ sum $ map product $ filter (\x -> length x == 2) withNumbers
+
+getAdjacentNumbers :: [NumIndex] -> (Int, Int) -> [Int]
+getAdjacentNumbers numbers (x, y) = adjacentNumbers
+ where
+  adjacentNumbers' = filter (\num -> (x, y) `elem` adjacentIndexes 9999 9999 num) numbers
+  adjacentNumbers = map (\(NumIndex n _) -> n) adjacentNumbers'
+
+getDups :: [(Int, Int)] -> [(Int, Int)]
+getDups [] = []
+getDups (x : xs) = if x `elem` xs then x : getDups xs else getDups xs
 
 isValid :: [String] -> NumIndex -> Bool
 isValid input (NumIndex n indexes) = any (\x -> x /= '.' && not (isDigit x)) adjacent
@@ -34,8 +50,9 @@ adjacentIndexes maxX maxY (NumIndex _ indexes) =
   filter (`notElem` indexes) $
     filter (\(x, y) -> x >= 0 && y >= 0 && x < maxX && y < maxY) $
       nub (indexes >>= adjacentCell)
- where
-  adjacentCell (a, b) = [(a + x, b + y) | x <- [-1, 0, 1], y <- [-1, 0, 1]]
+
+adjacentCell :: (Num a, Num b) => (a, b) -> [(a, b)]
+adjacentCell (a, b) = [(a + x, b + y) | x <- [-1, 0, 1], y <- [-1, 0, 1]]
 
 parseRow :: Int -> String -> [NumIndex]
 parseRow rowIndex line = map toNumIndex $ groupAdjacent nums
