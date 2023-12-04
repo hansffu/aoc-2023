@@ -11,4 +11,4 @@ parseAll :: Parser a -> [String] -> Either P.ParseError [a]
 parseAll parser = sequence <$> map (parse parser)
 
 intP :: Parser Int
-intP = read <$> P.many1 P.digit
+intP = read <$> P.many1 P.digit <* P.spaces
