@@ -1,13 +1,10 @@
 module Solutions.Day4 (day4) where
 
-import Control.Monad.State (MonadState (..), State, runState)
-import Data.Array (Array, listArray, (!))
+import Data.Array (listArray, (!))
 import Data.Either.Utils (fromRight)
 import Data.List (intersect)
-import Debug.Trace (traceShow)
 import Lib.Parser (Parser, intP, parseAll)
 import Lib.Solution (Solution (..))
-import Lib.Stack (Stack, isEmpty, pop', pushAll)
 
 import qualified Text.Parsec as P
 
@@ -31,10 +28,11 @@ part2 input = do
   cardArray = listArray (0, length cardList - 1) cardList
   scores = length . (\(Card _ w n) -> w `intersect` n) <$> cardArray
   pointsTo =
-    [ [currentCard + offset | offset <- [0 .. (scores ! currentCard)], offset /= 0]
-    | currentCard <- [0 .. (length scores - 1)]
-    ]
-  pointedToBy = listArray arrLen $ fmap (\x -> filter (\y -> x `elem` (pointsTo !! y)) [0 .. x]) [0 .. length cardList - 1]
+    listArray arrLen $
+      [ [currentCard + offset | offset <- [0 .. (scores ! currentCard)], offset /= 0]
+      | currentCard <- [0 .. (length scores - 1)]
+      ]
+  pointedToBy = listArray arrLen $ fmap (\x -> filter (\y -> x `elem` (pointsTo ! y)) [0 .. x]) [0 .. length cardList - 1]
   nums = 1 : next 1
    where
     next i
