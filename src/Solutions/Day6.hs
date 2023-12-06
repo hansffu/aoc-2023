@@ -1,19 +1,14 @@
-module Solutions.Day6 where
+module Solutions.Day6 (day6) where
 
+import Control.Monad (join)
 import Lib.Solution (Solution (Solution))
-import Lib.TaskRunner (InputType (..), run)
 import Lib.Utils (readInt)
 
 day6 :: Solution Int Int
 day6 = Solution 6 part1 part2
 
-test :: IO Int
-test = run part1 $ Sample 6
-
 part1 :: [String] -> IO Int
-part1 input = do
-  let races = parseInput input
-  return $ product $ raceScore <$> races
+part1 = return . product . (raceScore <$>) . parseInput
 
 raceScore :: (Int, Int) -> Int
 raceScore (duration, record) = length $ fst <$> filter (\(_, dis) -> dis > record) (take duration distanceTable)
@@ -31,4 +26,11 @@ calculateDistance :: Int -> Int -> Int
 calculateDistance duration ms = (duration - ms) * ms
 
 part2 :: [String] -> IO Int
-part2 input = return 0
+part2 = return . raceScore . parseInput2
+
+parseInput2 :: [String] -> (Int, Int)
+parseInput2 input = (duration, distance)
+ where
+  parseLine = readInt . join . drop 1 . words
+  duration = parseLine $ head input
+  distance = parseLine $ input !! 1
