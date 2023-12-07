@@ -19,6 +19,7 @@ library advent-of-code-solutions
     , parsec
     , split
     , text
+    , extra
 
   exposed-modules:
     Lib.Solution
@@ -28,6 +29,7 @@ library advent-of-code-solutions
     Solutions.Day4
     Solutions.Day5
     Solutions.Day6
+    Solutions.Day7
 
   other-modules:
     Lib.Parser

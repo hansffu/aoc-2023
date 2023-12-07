@@ -7,9 +7,10 @@ import Solutions.Day3 (day3)
 import Solutions.Day4 (day4)
 import Solutions.Day5 (day5)
 import Solutions.Day6 (day6)
+import Solutions.Day7 (day7)
 
 currentDay :: Int
-currentDay = 6
+currentDay = 7
 
 runAll :: Bool
 runAll = False
@@ -17,7 +18,7 @@ runAll = False
 main :: IO ()
 main = mapM_ run (filter (\s -> runAll || day s == currentDay) solutions)
  where
-  solutions = [day1, day2, day3, day4, day5, day6]
+  solutions = [day1, day2, day3, day4, day5, day6, day7]
 
 run :: (Show a, Show b) => Solution a b -> IO ()
 run solution = do
