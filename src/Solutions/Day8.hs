@@ -1,40 +1,39 @@
 {-# LANGUAGE LambdaCase #-}
 
-module Solutions.Day8 where
+module Solutions.Day8 (day8) where
 
 import Data.Either.Utils (fromRight)
-import qualified Data.Map as Map
+import qualified Data.HashMap as Map
+
+import Data.List.Utils (endswith)
 import Data.Maybe (fromJust)
 import Lib.Parser (Parser, parse)
 import Lib.Solution (Solution (Solution))
-import Lib.TaskRunner (InputType (..), run)
 import qualified Text.Parsec as P
 
 day8 :: Solution Int Int
 day8 = Solution 8 part1 part2
 
-test :: IO Int
-test = run part1 $ Sample 8
-
 part1 :: [String] -> IO Int
 part1 input = do
   let (directions, crossroads') = parseMap input
   let crossroads = Map.fromList crossroads'
-  let res = countSteps crossroads (cycle directions) "AAA"
-  return res
-
-countSteps :: Map.Map String (String, String) -> [(String, String) -> String] -> String -> Int
-countSteps _ [] _ = error "no more steps"
-countSteps crossroads (dir : dirs) currentStep
-  | currentStep == "ZZZ" = 0
-  | otherwise = 1 + countSteps crossroads dirs nexStep
- where
-  nexStep = dir $ fromJust $ Map.lookup currentStep crossroads
+  return $ length $ takeWhile (/= "ZZZ") $ getSteps crossroads "AAA" (cycle directions)
 
 part2 :: [String] -> IO Int
-part2 input = return 0
+part2 input = return $ foldl1 lcm $ fst . head . filter (endswith "Z" . snd) . zip [0 ..] <$> steps
+ where
+  (directions, crossroads') = parseMap input
+  crossroads = Map.fromList crossroads'
+  allSteps startingPosition = getSteps crossroads startingPosition (cycle directions)
+  steps = allSteps <$> filter (endswith "A") (Map.keys crossroads)
 
--- parseMap :: [string] -> ([String -> String], (String, String))
+getSteps :: Map.Map String (String, String) -> String -> [(String, String) -> String] -> [String]
+getSteps crossroads = scanl getNextStep
+ where
+  getNextStep :: String -> ((String, String) -> String) -> String
+  getNextStep currentStep dir = dir $ fromJust $ Map.lookup currentStep crossroads
+
 parseMap :: [String] -> ([(String, String) -> String], [(String, (String, String))])
 parseMap input = (directions (head input), crossroads)
  where
@@ -43,8 +42,7 @@ parseMap input = (directions (head input), crossroads)
 
 crossroadP :: Parser (String, (String, String))
 crossroadP = do
-  key <- P.many P.letter <* P.string " = "
+  key <- P.count 3 P.anyChar <* P.string " = "
   l <- P.char '(' *> P.count 3 P.anyChar <* P.string ", "
   r <- P.count 3 P.anyChar <* P.char ')'
   return (key, (l, r))
-

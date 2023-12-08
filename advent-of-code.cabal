@@ -21,6 +21,7 @@ library advent-of-code-solutions
     , text
     , extra
     , containers
+    , hashmap
 
   exposed-modules:
     Lib.Solution
