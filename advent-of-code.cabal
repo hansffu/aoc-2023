@@ -20,6 +20,7 @@ library advent-of-code-solutions
     , split
     , text
     , extra
+    , containers
 
   exposed-modules:
     Lib.Solution
@@ -30,6 +31,7 @@ library advent-of-code-solutions
     Solutions.Day5
     Solutions.Day6
     Solutions.Day7
+    Solutions.Day8
 
   other-modules:
     Lib.Parser
