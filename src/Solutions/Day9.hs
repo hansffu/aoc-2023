@@ -7,10 +7,15 @@ day9 :: Solution Int Int
 day9 = Solution 9 part1 part2
 
 test :: IO Int
-test = run part1 $ Input 9
+test = run part2 $ Input 9
 
 part1 :: [String] -> IO Int
 part1 input' = return $ sum (calcNext . diffsTo0 <$> input)
+ where
+  input = reverse <$> parseInput input'
+
+part2 :: [String] -> IO Int
+part2 input' = return $ sum (calcNext . diffsTo0 <$> input)
  where
   input = parseInput input'
 
@@ -29,10 +34,7 @@ diffs [] = []
 diffs [_] = []
 diffs (x : y : xs) = (x - y) : diffs (y : xs)
 
-part2 :: [String] -> IO Int
-part2 input = return 0
-
 parseInput :: [String] -> [[Int]]
 parseInput = (parseLine <$>)
  where
-  parseLine = (read <$>) . reverse . words
+  parseLine = (read <$>) . words
