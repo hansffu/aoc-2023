@@ -2,15 +2,15 @@ module Solutions.Day10 where
 
 import Control.Monad (mfilter)
 import Data.Array (Array, bounds, listArray, (!))
+import qualified Data.HashSet as HS
+
 import Data.Maybe (fromJust, isJust)
 import Lib.Solution (Part, Solution (Solution))
 import Lib.TaskRunner (InputType (..), run)
+import Lib.Utils (index2d)
 
 day10 :: Solution Int Int
 day10 = Solution 10 part1 part2
-
-test :: IO Int
-test = run part1 $ Sample 10
 
 part1 :: Part Int
 part1 input = return $ if odd loopLength then (loopLength - 1) `div` 2 else loopLength `div` 2
@@ -20,6 +20,41 @@ part1 input = return $ if odd loopLength then (loopLength - 1) `div` 2 else loop
   secondPipes = startingCells input start
   loop = buildLoop inputArr start (head secondPipes)
   loopLength = length (takeWhile (/= start) (tail loop)) + 1
+
+part2 :: Part Int
+part2 input = return $ length $ filter id $ isInside1D startReplacement $ concat withoutExtraPipes
+ where
+  indexed = index2d input
+  start = findStart input
+  inputArr = toArray2d input
+  secondPipes = startingCells input start
+  loop = HS.fromList $ start : takeWhile (/= start) (tail (buildLoop inputArr start (head secondPipes)))
+  withoutExtraPipes = ((\(idx, c) -> if idx `HS.member` loop then c else '.') <$>) <$> indexed
+  startReplacement = findStartReplacement start secondPipes
+
+findStartReplacement :: (Int, Int) -> [(Int, Int)] -> Char
+findStartReplacement _ [] = error "fail"
+findStartReplacement _ [_] = error "fail"
+findStartReplacement (si, sj) ((ai, aj) : (bi, bj) : _)
+  | (ai < si && bi > si) || (bi < si && ai > si) = '|'
+  | (aj < sj && bj > sj) || (bj < sj && aj > sj) = '-'
+  | (ai < si && bj > sj) || (bi < si && aj > sj) = '7'
+  | (ai > si && bj > sj) || (bi > si && bj > sj) = 'F'
+  | (ai > si && bj < sj) || (bi > si && aj < sj) = 'L'
+  | (ai < si && bj < sj) || (bi < si && aj < sj) = 'J'
+  | otherwise = error "invalid pos"
+
+isInside1D :: Char -> [Char] -> [Bool]
+isInside1D startReplacement = checkInside False
+ where
+  checkInside _ [] = []
+  checkInside isInside (x : xs)
+    | x `elem` corners = False : checkInside (not isInside) xs
+    | x `elem` "|-7FLJS" = False : checkInside isInside xs
+    | otherwise = isInside : checkInside isInside xs
+   where
+    corners' = "|7F"
+    corners = if startReplacement `elem` corners' then 'S' : corners' else corners'
 
 buildLoop :: Array2d Char -> (Int, Int) -> (Int, Int) -> [(Int, Int)]
 buildLoop rows start firstPipe = loop
@@ -53,9 +88,6 @@ neighbours rows (i, j) =
   iBound = snd $ bounds rows
   jBound = snd $ bounds (rows ! 0)
   inBounds (i', j') = i' >= 0 && i' < iBound && j' >= 0 && j' < jBound
-
-part2 :: Part Int
-part2 = return . const 0
 
 findStart :: [String] -> (Int, Int)
 findStart rows = head $ indexed >>= (\(i, row) -> row >>= (\(j, c) -> ([(i, j) | c == 'S'])))

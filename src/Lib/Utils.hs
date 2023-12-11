@@ -1,4 +1,4 @@
-module Lib.Utils (readInt, juxt, debug, debug', prettyPrint) where
+module Lib.Utils (readInt, juxt, debug, debug', prettyPrint, index2d) where
 
 import Data.List.Utils (join)
 import Debug.Trace (traceShow)
@@ -15,5 +15,8 @@ debug x = traceShow x x
 debug' :: (Show b) => String -> b -> b
 debug' label x = traceShow (label <> ": " <> show x) x
 
-prettyPrint :: [String] -> IO ()
-prettyPrint = putStrLn . join "\n"
+prettyPrint :: (Show a) => [a] -> IO ()
+prettyPrint = putStrLn . join "\n" . map show
+
+index2d :: [[a]] -> [[((Int, Int), a)]]
+index2d = zipWith (\i -> zipWith (\j x -> ((i, j), x)) [0 ..]) [0 ..]
