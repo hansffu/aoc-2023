@@ -1,4 +1,4 @@
-module Lib.Utils (readInt, juxt, debug, debug', prettyPrint, index2d) where
+module Lib.Utils (readInt, juxt, debug, debug', prettyPrint, index2d, applyT2) where
 
 import Data.List.Utils (join)
 import Debug.Trace (traceShow)
@@ -20,3 +20,6 @@ prettyPrint = putStrLn . join "\n" . map show
 
 index2d :: [[a]] -> [[((Int, Int), a)]]
 index2d = zipWith (\i -> zipWith (\j x -> ((i, j), x)) [0 ..]) [0 ..]
+
+applyT2 :: (t -> a, t -> b) -> t -> (a, b)
+applyT2 (f1, f2) b = (f1 b, f2 b)
