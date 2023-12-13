@@ -22,6 +22,7 @@ library advent-of-code-solutions
     , extra
     , containers
     , hashmap
+    , data-ordlist
 
   exposed-modules:
     Lib.Solution
@@ -37,6 +38,7 @@ library advent-of-code-solutions
     Solutions.Day10
     Solutions.Day11
     Solutions.Day12
+    Solutions.Day13
 
   other-modules:
     Lib.Parser
