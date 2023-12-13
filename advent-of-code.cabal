@@ -23,6 +23,7 @@ library advent-of-code-solutions
     , containers
     , hashmap
     , data-ordlist
+    , ghc
 
   exposed-modules:
     Lib.Solution
