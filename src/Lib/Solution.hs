@@ -1,8 +1,11 @@
-module Lib.Solution (Solution (..), Part, solve, testSolution) where
+module Lib.Solution (Solution (..), Part, solve, testSolution, todo) where
 
 import Lib.TaskRunner (InputType (..), readInput)
 
 type Part a = [String] -> IO a
+
+todo :: [String] -> IO Int
+todo = const $ return 0
 
 data (Show a, Show b) => Solution a b = Solution
   { day :: Int
