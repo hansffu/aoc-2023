@@ -1,36 +1,26 @@
-{-# LANGUAGE PatternGuards #-}
-
 module Solutions.Day16 (day16, test) where
 
 import Control.Applicative ((<|>))
-import Control.Monad.State (MonadState (get), State, execState, runState, state)
+import Control.Monad.State (State, execState, state)
 import Data.Either.Utils (fromRight)
-
 import Data.List (nub)
-import Data.Set (Set, empty, insert, member, notMember, toList)
-import Lib.Parser (parse, parseAll)
+import Data.Set (Set, empty, insert, member, toList)
+import Lib.Parser (parseAll)
 import Lib.Solution (Part, Solution (..), todo)
 import Lib.TaskRunner (InputType (..), run)
-import Lib.Utils (debug, debug', prettyPrint)
 import qualified Text.Parsec as P
 
 day16 :: Solution Int Int
-day16 = Solution 16 todo todo
+day16 = Solution 16 part1 todo
 
 test :: IO Int
-test = run part1 $ Input 16
+test = run part1 $ Sample 16
 
 part1 :: Part Int
-part1 input = do
-  -- prettyPrint input
-  -- print $ nextSteps tiles $ Step (0, 0) E
-  let a = toList $ visited $ execState (goLights tiles) (Dfs empty [Step (0, 0) E])
-  let b = nub $ coord <$> a
-  -- print $ length b
-  -- print $ take 10 $ goLights empty tiles (Step (0, 0) E)
-  return $ length $ nub $ coord <$> a
+part1 input = return $ length $ nub $ coord <$> visitedState
  where
   tiles = parseInput input
+  visitedState = toList $ visited $ execState (goLights tiles) (Dfs empty [Step (0, 0) E])
 
 data Dfs = Dfs {visited :: Set Step, stack :: [Step]}
 type DfsState = State Dfs ()
@@ -66,20 +56,9 @@ goLights tiles = do
         then goLights tiles
         else do
           visit step
-          -- let neighbours = debug' (show (coord step) <> show (direction step) <> ": ") $ nextSteps tiles step
           let neighbours = nextSteps tiles step
           pushAll neighbours
           goLights tiles
-
--- goLights :: Set Step -> [[TileType]] -> Step -> [Step]
--- goLights visited tiles current = insertAll visited'
---  where
---   neighbours = filter (`notMember` visited) $ nextSteps tiles current
---   visited' = insert current visited
---   nn = neighbours >>= goLights visited' tiles
---   insertAll :: Set a -> [a] -> Set a
---   insertAll s [] = s
---   insertAll s (v : vs) = insertAll (insert v s) vs
 
 data Direction = E | W | N | S deriving (Show, Eq)
 data TileType = Empty | VSplit | HSplit | DiagLR | DiagRL
@@ -122,7 +101,8 @@ instance Show TileType where
 instance Ord Step where
   compare a b = compare (show a) (show b)
 
-parseInput = fromRight . (parseAll $ P.many tileType)
+parseInput :: [String] -> [[TileType]]
+parseInput = fromRight . parseAll (P.many tileType)
  where
   tileType = emptyP <|> vSplitP <|> hSplitP <|> lr <|> rl
   emptyP = Empty <$ P.char '.'
