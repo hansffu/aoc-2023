@@ -25,6 +25,7 @@ library advent-of-code-solutions
     , hashable
     , data-ordlist
     , ghc
+    , parallel
 
   exposed-modules:
     Lib.Solution

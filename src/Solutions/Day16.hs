@@ -2,25 +2,37 @@ module Solutions.Day16 (day16, test) where
 
 import Control.Applicative ((<|>))
 import Control.Monad.State (State, execState, state)
+import Control.Parallel.Strategies (parMap, rdeepseq)
 import Data.Either.Utils (fromRight)
 import Data.List (nub)
 import Data.Set (Set, empty, insert, member, toList)
 import Lib.Parser (parseAll)
-import Lib.Solution (Part, Solution (..), todo)
+import Lib.Solution (Part, Solution (..))
 import Lib.TaskRunner (InputType (..), run)
 import qualified Text.Parsec as P
 
 day16 :: Solution Int Int
-day16 = Solution 16 part1 todo
+day16 = Solution 16 part1 part2
 
 test :: IO Int
-test = run part1 $ Sample 16
+test = run part2 $ Sample 16
 
 part1 :: Part Int
 part1 input = return $ length $ nub $ coord <$> visitedState
  where
   tiles = parseInput input
   visitedState = toList $ visited $ execState (goLights tiles) (Dfs empty [Step (0, 0) E])
+
+part2 :: Part Int
+part2 input = return $ maximum $ parMap rdeepseq go startingPositions
+ where
+  go startingPosition = length $ nub $ coord <$> toList (visited $ execState (goLights tiles) (Dfs empty [startingPosition]))
+  tiles = parseInput input
+  startingPositions =
+    ((\i -> Step (i, 0) E) <$> [0 .. length input - 1])
+      <> ((\i -> Step (i, length (head input) - 1) W) <$> [0 .. length input - 1])
+      <> ((\j -> Step (0, j) S) <$> [0 .. length (head input) - 1])
+      <> ((\j -> Step (length input - 1, j) N) <$> [0 .. length (head input) - 1])
 
 data Dfs = Dfs {visited :: Set Step, stack :: [Step]}
 type DfsState = State Dfs ()
