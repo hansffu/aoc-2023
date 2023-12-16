@@ -51,6 +51,7 @@ library advent-of-code-solutions
     Lib.TaskRunner
     Lib.Utils
     Lib.Stack
+    Lib.Dfs
 
   default-language: Haskell2010
 

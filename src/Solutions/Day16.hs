@@ -1,11 +1,12 @@
 module Solutions.Day16 (day16, test) where
 
 import Control.Applicative ((<|>))
-import Control.Monad.State (State, execState, state)
+
 import Control.Parallel.Strategies (parMap, rdeepseq)
 import Data.Either.Utils (fromRight)
 import Data.List (nub)
-import Data.Set (Set, empty, insert, member, toList)
+
+import Lib.Dfs (dfs)
 import Lib.Parser (parseAll)
 import Lib.Solution (Part, Solution (..))
 import Lib.TaskRunner (InputType (..), run)
@@ -21,12 +22,12 @@ part1 :: Part Int
 part1 input = return $ length $ nub $ coord <$> visitedState
  where
   tiles = parseInput input
-  visitedState = toList $ visited $ execState (goLights tiles) (Dfs empty [Step (0, 0) E])
+  visitedState = goLights tiles $ Step (0, 0) E
 
 part2 :: Part Int
 part2 input = return $ maximum $ parMap rdeepseq go startingPositions
  where
-  go startingPosition = length $ nub $ coord <$> toList (visited $ execState (goLights tiles) (Dfs empty [startingPosition]))
+  go startingPosition = length $ nub $ coord <$> goLights tiles startingPosition
   tiles = parseInput input
   startingPositions =
     ((\i -> Step (i, 0) E) <$> [0 .. length input - 1])
@@ -34,43 +35,8 @@ part2 input = return $ maximum $ parMap rdeepseq go startingPositions
       <> ((\j -> Step (0, j) S) <$> [0 .. length (head input) - 1])
       <> ((\j -> Step (length input - 1, j) N) <$> [0 .. length (head input) - 1])
 
-data Dfs = Dfs {visited :: Set Step, stack :: [Step]}
-type DfsState = State Dfs ()
-
-isVisited :: Step -> State Dfs Bool
-isVisited step = state isVisited'
- where
-  isVisited' s = (step `member` visited s, s)
-
-visit :: Step -> State Dfs ()
-visit step = state visit'
- where
-  visit' s = ((), s{visited = insert step (visited s)})
-
-pop :: State Dfs (Maybe Step)
-pop = state pop'
- where
-  pop' s = let (popped, rest) = doPop (stack s) in (popped, s{stack = rest})
-  doPop [] = (Nothing, [])
-  doPop (x : xs) = (Just x, xs)
-
-pushAll :: [Step] -> State Dfs ()
-pushAll xs = state (\s -> ((), s{stack = xs <> stack s}))
-
-goLights :: [[TileType]] -> DfsState
-goLights tiles = do
-  next <- pop
-  case next of
-    Nothing -> return ()
-    Just step -> do
-      visited' <- isVisited step
-      if visited'
-        then goLights tiles
-        else do
-          visit step
-          let neighbours = nextSteps tiles step
-          pushAll neighbours
-          goLights tiles
+goLights :: [[TileType]] -> Step -> [Step]
+goLights tiles = dfs (nextSteps tiles)
 
 data Direction = E | W | N | S deriving (Show, Eq)
 data TileType = Empty | VSplit | HSplit | DiagLR | DiagRL
