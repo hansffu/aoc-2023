@@ -47,6 +47,7 @@ library advent-of-code-solutions
     Solutions.Day15
     Solutions.Day16
     Solutions.Day18
+    Solutions.Day19
 
   other-modules:
     Lib.Parser
