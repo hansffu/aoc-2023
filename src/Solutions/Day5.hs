@@ -1,5 +1,3 @@
-{-# LANGUAGE TupleSections #-}
-
 module Solutions.Day5 where
 
 import Data.Ix (inRange)
@@ -30,7 +28,7 @@ part1 input = do
 
 part2 :: [String] -> IO Int
 part2 input = do
-  let seedRanges = (\x -> (head x, head x + x !! 1)) <$> chunksOf 2 (readInt <$> tail (words $ head input)) >>= (\(a, b) -> [a..b])
+  let seedRanges = chunksOf 2 (readInt <$> tail (words $ head input)) >>= (\(a, b) -> [a .. b]) . (\x -> (head x, head x + x !! 1))
   let seeds = readInt <$> tail (words $ head input)
   -- print seedRanges
   -- print $ rangeDefs input

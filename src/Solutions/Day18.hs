@@ -87,7 +87,7 @@ findCorners' (i, j, _, inDir) ((outDir, len, _) : inss) = prevCorner : findCorne
 
 calcTrenchCoords :: Coord -> [Instruction] -> [Trench]
 calcTrenchCoords _ [] = []
-calcTrenchCoords (i, j) ((dir, len, _) : inss) = tail ((,dir) <$> newCoords) <> calcTrenchCoords (last $ newCoords) inss
+calcTrenchCoords (i, j) ((dir, len, _) : inss) = tail ((,dir) <$> newCoords) <> calcTrenchCoords (last newCoords) inss
  where
   newCoords = case dir of
     'R' -> [(i, j + j') | j' <- [0 .. len]]

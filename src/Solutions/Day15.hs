@@ -26,7 +26,7 @@ part2 input = return $ sum $ focusingPower <$> processed
  where
   instructions' = parseLenses (head input)
   boxes = fromList $ (\i -> (i, Box i [])) <$> [0 .. 256]
-  processed = process boxes  instructions'
+  processed = process boxes instructions'
 
 focusingPower :: Box -> Int
 focusingPower b = sum $ (* boxPower) <$> zipWith (*) [1 ..] (lensPower <$> lenses b)
