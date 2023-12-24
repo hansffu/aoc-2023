@@ -43,6 +43,7 @@ library advent-of-code-solutions
     Solutions.Day2
     Solutions.Day20
     Solutions.Day21
+    Solutions.Day23
     Solutions.Day3
     Solutions.Day4
     Solutions.Day5
