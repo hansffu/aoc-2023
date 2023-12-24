@@ -1,35 +1,49 @@
+{-# LANGUAGE LambdaCase #-}
+
 module Solutions.Day23 (day23, test) where
 
+import Control.Parallel.Strategies (parMap, rdeepseq)
 import qualified Data.Map as M
-import Data.Maybe (catMaybes)
+import Data.Maybe (catMaybes, fromMaybe, mapMaybe)
 import qualified Data.Set as S
 import Lib.Solution (Part, Solution (Solution), todo)
 import Lib.TaskRunner (InputType (..), run)
 import Lib.Utils (applyT2)
 
 day23 :: Solution Int Int
-day23 = Solution 23 part1 todo
+day23 = Solution 23 part1 part2
 
 test :: IO Int
-test = run part1 $ Sample 23
+test = run part2 $ Sample 23
 
 part1 :: Part Int
-part1 input = return $ longestPath groundMap $ getCoord start
+part1 input = return $ longestPath groundMap (getCoord end) (getCoord start)
  where
   groundList = parseInput input
   groundMap = M.fromList $ applyT2 (getCoord, id) <$> groundList
   start = head groundList
+  end = last groundList
+
+part2 :: Part Int
+part2 input = return $ longestPath groundMap (getCoord end) (getCoord start)
+ where
+  groundList = (\case Slope c _ -> Path c; p -> p) <$> parseInput input
+  groundMap = M.fromList $ applyT2 (getCoord, id) <$> groundList
+  start = head groundList
+  end = last groundList
 
 type Coord = (Int, Int)
 data Dir = U | D | L | R deriving (Show)
 data Ground = Path Coord | Slope Coord Dir deriving (Show)
 
-longestPath :: M.Map Coord Ground -> Coord -> Int
-longestPath groundMap = go (-1) S.empty
+longestPath :: M.Map Coord Ground -> Coord -> Coord -> Int
+longestPath groundMap end = fromMaybe 0 . go 0 S.empty
  where
+  go :: Int -> S.Set (Int, Int) -> Coord -> Maybe Int
   go dist visited current
-    | alreadyVisited = dist
-    | otherwise = maximum $ go (dist + 1) (S.insert current visited) <$> neighbors
+    | current == end = Just dist
+    | alreadyVisited = Nothing
+    | otherwise = Just $ foldr max 0 $ catMaybes $ parMap rdeepseq (go (dist + 1) (S.insert current visited)) neighbors
    where
     alreadyVisited = S.member current visited
     neighbors = getNeighbours groundMap current
